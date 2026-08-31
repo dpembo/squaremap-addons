@@ -18,7 +18,7 @@ import xyz.jpenilla.squaremap.api.WorldIdentifier;
 import static xyz.jpenilla.squaremap.api.Key.key;
 
 public final class SquaremapHook {
-    public static final Key WARP_ICON_KEY = key("essentials_warp_icon");
+    public static final Key WARP_ICON_KEY = key("axplayerwarps_warp_icon");
 
     private final Map<WorldIdentifier, SquaremapTask> tasks = new HashMap<>();
     private final SquaremapEssentials plugin;
@@ -45,7 +45,7 @@ public final class SquaremapHook {
                 .showControls(worldConfig.warpsShowControls)
                 .defaultHidden(worldConfig.warpsControlsHidden)
                 .build();
-            mapWorld.layerRegistry().register(Key.of("essentials_warps"), provider);
+            mapWorld.layerRegistry().register(Key.of("axplayerwarps_warps"), provider);
             SquaremapTask task = new SquaremapTask(mapWorld, worldConfig, provider);
             task.runTaskTimerAsynchronously(this.plugin, 0, 20L * this.plugin.config().updateInterval);
             this.tasks.put(mapWorld.identifier(), task);

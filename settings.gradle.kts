@@ -19,6 +19,11 @@ dependencyResolutionManagement {
                 includeGroup("net.essentialsx")
             }
         }
+        maven("https://repo.artillex-studios.com/releases/") {
+            mavenContent {
+                includeGroup("com.artillexstudios")
+            }
+        }
         maven("https://jitpack.io/") {
             mavenContent {
                 includeGroupByRegex("com\\.github\\..*")

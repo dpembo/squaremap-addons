@@ -1,13 +1,11 @@
 package xyz.jpenilla.squaremap.addon.essentialsx.task;
 
-import com.earth2me.essentials.Warps;
-import com.earth2me.essentials.commands.WarpNotFoundException;
-import net.ess3.api.InvalidWorldException;
-import org.bukkit.Location;
+import com.artillexstudios.axplayerwarps.enums.Access;
+import com.artillexstudios.axplayerwarps.warps.Warp;
 import org.bukkit.World;
 import org.bukkit.scheduler.BukkitRunnable;
 import xyz.jpenilla.squaremap.addon.essentialsx.config.EssXWorldConfig;
-import xyz.jpenilla.squaremap.addon.essentialsx.hook.EssentialsHook;
+import xyz.jpenilla.squaremap.addon.essentialsx.hook.AxPlayerWarpsHook;
 import xyz.jpenilla.squaremap.addon.essentialsx.hook.SquaremapHook;
 import xyz.jpenilla.squaremap.api.BukkitAdapter;
 import xyz.jpenilla.squaremap.api.Key;
@@ -39,32 +37,39 @@ public final class SquaremapTask extends BukkitRunnable {
 
         this.provider.clearMarkers();
 
-        Warps warps = EssentialsHook.getWarps();
-
         final World bukkitWorld = BukkitAdapter.bukkitWorld(this.world);
 
-        warps.getList().forEach(warpName -> {
-            try {
-                Location loc = warps.getWarp(warpName);
-                if (loc.getWorld().getUID().equals(bukkitWorld.getUID())) {
-                    this.handle(warpName, loc);
-                }
-            } catch (WarpNotFoundException | InvalidWorldException ignore) {
+        // Matched by world name rather than the warp's Location#getWorld(), since
+        // AxPlayerWarps may hold a warp whose world wasn't loaded yet when it read
+        // it from the database, leaving that Location's world null.
+        for (final Warp warp : AxPlayerWarpsHook.getWarps()) {
+            if (!warp.getWorldName().equals(bukkitWorld.getName())) {
+                continue;
             }
-        });
+            if (warp.getAccess() == Access.PRIVATE && !this.worldConfig.warpsIncludePrivate) {
+                continue;
+            }
+            if (warp.getAccess() == Access.WHITELISTED && !this.worldConfig.warpsIncludeWhitelisted) {
+                continue;
+            }
+            this.handle(warp);
+        }
     }
 
-    private void handle(String warpName, Location loc) {
-        Icon icon = Marker.icon(BukkitAdapter.point(loc), SquaremapHook.WARP_ICON_KEY, this.worldConfig.iconSize);
+    private void handle(Warp warp) {
+        Icon icon = Marker.icon(BukkitAdapter.point(warp.getLocation()), SquaremapHook.WARP_ICON_KEY, this.worldConfig.iconSize);
 
         icon.anchor(Point.of(this.worldConfig.iconAnchorX, this.worldConfig.iconAnchorZ));
 
         icon.markerOptions(
             MarkerOptions.builder()
-                .hoverTooltip(this.worldConfig.warpsTooltip.replace("{warp}", warpName))
+                .hoverTooltip(this.worldConfig.warpsTooltip
+                    .replace("{warp}", warp.getName())
+                    .replace("{owner}", warp.getOwnerName())
+                    .replace("{description}", warp.getDescription()))
         );
 
-        String markerid = "essentials_warp_" + warpName.hashCode();
+        String markerid = "axplayerwarps_warp_" + warp.getId();
         this.provider.addMarker(Key.of(markerid), icon);
     }
 

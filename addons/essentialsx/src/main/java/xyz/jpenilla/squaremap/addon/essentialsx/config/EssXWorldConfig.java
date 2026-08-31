@@ -17,6 +17,8 @@ public final class EssXWorldConfig extends WorldConfig {
     public int warpsPriority = 999;
     public int warpsZindex = 999;
     public String warpsTooltip = "{warp}";
+    public boolean warpsIncludePrivate = false;
+    public boolean warpsIncludeWhitelisted = false;
 
     private void layerSettings() {
         this.warpsLabel = this.getString("warps.label", this.warpsLabel);
@@ -25,6 +27,8 @@ public final class EssXWorldConfig extends WorldConfig {
         this.warpsPriority = this.getInt("warps.priority", this.warpsPriority);
         this.warpsZindex = this.getInt("warps.z-index", this.warpsZindex);
         this.warpsTooltip = this.getString("warps.tooltip", this.warpsTooltip);
+        this.warpsIncludePrivate = this.getBoolean("warps.include-private", this.warpsIncludePrivate);
+        this.warpsIncludeWhitelisted = this.getBoolean("warps.include-whitelisted", this.warpsIncludeWhitelisted);
     }
 
     public int iconSize = 16;
