@@ -34,6 +34,10 @@ dependencyResolutionManagement {
             "0.0.25-FIX3",
             "claimchunk-0.0.25-FIX3-plugin.jar"
         )
+        flatDir {
+            dirs("libs")
+        }
+
     }
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
 }
